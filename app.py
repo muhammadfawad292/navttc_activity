@@ -314,39 +314,41 @@ def parse_response(text: str) -> dict:
 #     model = client.models.generate_content(MODEL_NAME)
 #     response = model.generate_content([prompt, image])
 #     return response.text
-# def call_gemini(image: Image.Image, prompt: str) -> str:
-#     client = get_client()
 
-#     response = client.models.generate_content(
-#         model="gemini-2.5-flash",
-#         contents=[prompt, image]
-#     )
-
-#     return response.text
 def call_gemini(image: Image.Image, prompt: str) -> str:
     client = get_client()
 
-    models = [
-        "gemini-2.5-flash",   # Primary (fast & good)
-        "gemini-1.5-flash"    # Backup (more stable)
-    ]
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=[prompt, image]
+    )
 
-    last_error = None
+    return response.text
 
-    for model_name in models:
-        try:
-            response = client.models.generate_content(
-                model=model_name,
-                contents=[prompt, image]
-            )
-            return response.text
+# def call_gemini(image: Image.Image, prompt: str) -> str:
+#     client = get_client()
 
-        except Exception as e:
-            last_error = e
-            continue  # Try next model
+#     models = [
+#         "gemini-2.5-flash",   # Primary (fast & good)
+#         "gemini-1.5-flash"    # Backup (more stable)
+#     ]
 
-    # If all models fail
-    raise Exception(f"All models failed. Last error: {last_error}")
+#     last_error = None
+
+#     for model_name in models:
+#         try:
+#             response = client.models.generate_content(
+#                 model=model_name,
+#                 contents=[prompt, image]
+#             )
+#             return response.text
+
+#         except Exception as e:
+#             last_error = e
+#             continue  # Try next model
+
+#     # If all models fail
+#     raise Exception(f"All models failed. Last error: {last_error}")
 
 
 # ──────────────────────────────────────────────
