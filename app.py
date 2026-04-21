@@ -464,5 +464,7 @@ if analyze_clicked:
             </div>
             """, unsafe_allow_html=True)
 
-        st.markdown('<hr class="styled-divider">, unsafe_allow_html=True)
+        import streamlit as st
+
+        st.markdown('<hr class="styled-divider">', unsafe_allow_html=True)
         st.success("✅ Analysis complete! Use the feedback above to level up your design.")
