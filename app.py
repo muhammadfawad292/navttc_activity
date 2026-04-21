@@ -1,5 +1,5 @@
 import streamlit as st
-from google import genai
+import google.generativeai as genai  # Changed import
 from PIL import Image
 import fitz  # PyMuPDF
 import io
@@ -224,6 +224,8 @@ def configure_gemini():
                 "For Streamlit Cloud: Add `GEMINI_API_KEY` to your Secrets (Settings → Secrets)"
             )
             return False
+        
+        # Configure the API key properly
         genai.configure(api_key=api_key)
         return True
     except Exception as e:
@@ -242,12 +244,6 @@ def pdf_to_image(pdf_bytes: bytes) -> Image.Image:
     pix = page.get_pixmap(matrix=mat)
     img_bytes = pix.tobytes("png")
     return Image.open(io.BytesIO(img_bytes))
-
-
-def image_to_base64(img: Image.Image) -> str:
-    buf = io.BytesIO()
-    img.save(buf, format="PNG")
-    return base64.b64encode(buf.getvalue()).decode()
 
 
 def build_prompt(design_type: str, brand_name: str, industry: str, extra_context: str) -> str:
@@ -328,11 +324,22 @@ def parse_response(text: str) -> dict:
 def call_gemini(image: Image.Image, prompt: str) -> str:
     # Use a stable, widely available model
     # Options: "gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro-vision"
-    MODEL_NAME = "gemini-1.5-flash"  # Changed from gemini-2.5-flash
+    MODEL_NAME = "gemini-1.5-flash"
     
-    model = genai.GenerativeModel(MODEL_NAME)
-    response = model.generate_content([prompt, image])
-    return response.text
+    try:
+        model = genai.GenerativeModel(MODEL_NAME)
+        response = model.generate_content([prompt, image])
+        return response.text
+    except Exception as e:
+        # If 503 error or model unavailable, try fallback model
+        if "503" in str(e) or "unavailable" in str(e).lower():
+            st.warning("⚠️ High demand on gemini-1.5-flash, trying fallback model...")
+            fallback_model = "gemini-1.0-pro-vision"
+            model = genai.GenerativeModel(fallback_model)
+            response = model.generate_content([prompt, image])
+            return response.text
+        else:
+            raise e
 
 
 # ──────────────────────────────────────────────
@@ -457,5 +464,5 @@ if analyze_clicked:
             </div>
             """, unsafe_allow_html=True)
 
-        st.markdown('<hr class="styled-divider">', unsafe_allow_html=True)
+        st.markdown('<hr class="styled-divider">, unsafe_allow_html=True)
         st.success("✅ Analysis complete! Use the feedback above to level up your design.")
