@@ -331,7 +331,7 @@ def call_gemini(image: Image.Image, prompt: str) -> str:
 st.markdown("""
 <div class="hero-header">
   <!-- <h1>🔥 AI Vision Roast System</h1> -->
-  <h1>🔥 AI RoastMyDesign</h1>
+  <h1>🔥 RoastMyDesign</h1>
   <p>Upload your logo or banner — we'll roast it, then actually help you fix it.</p>
 </div>
 """, unsafe_allow_html=True)
