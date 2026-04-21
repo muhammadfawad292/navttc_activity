@@ -384,7 +384,7 @@ if analyze_clicked:
     # elif not configure_gemini():
     #     pass  # error already shown
     elif not uploaded_file:
-    st.warning("⚠️ Please upload an image or PDF first.")
+        st.warning("⚠️ Please upload an image or PDF first.")
     else:
         # Load image
         with st.spinner("Processing your design..."):
