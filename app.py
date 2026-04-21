@@ -323,8 +323,8 @@ def parse_response(text: str) -> dict:
 
 def call_gemini(image: Image.Image, prompt: str) -> str:
     # Use a stable, widely available model
-    # Options: "gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro-vision"
-    MODEL_NAME = "gemini-1.5-flash"
+    # Options: "gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-pro-vision"
+    MODEL_NAME = "gemini-2.5-flash"
     
     try:
         model = genai.GenerativeModel(MODEL_NAME)
@@ -333,7 +333,7 @@ def call_gemini(image: Image.Image, prompt: str) -> str:
     except Exception as e:
         # If 503 error or model unavailable, try fallback model
         if "503" in str(e) or "unavailable" in str(e).lower():
-            st.warning("⚠️ High demand on gemini-1.5-flash, trying fallback model...")
+            st.warning("⚠️ High demand on gemini-2.5-flash, trying fallback model...")
             fallback_model = "gemini-1.0-pro-vision"
             model = genai.GenerativeModel(fallback_model)
             response = model.generate_content([prompt, image])
@@ -464,7 +464,5 @@ if analyze_clicked:
             </div>
             """, unsafe_allow_html=True)
 
-        import streamlit as st
-
-        st.markdown('<hr class="styled-divider">', unsafe_allow_html=True)
+        st.markdown('<hr class="styled-divider">, unsafe_allow_html=True)
         st.success("✅ Analysis complete! Use the feedback above to level up your design.")
