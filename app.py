@@ -4,13 +4,20 @@ from PIL import Image
 import fitz  # PyMuPDF
 import io
 import base64
+import os
+
+# Try to load .env for local development
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # dotenv not installed, that's fine for cloud deployment
 
 # ──────────────────────────────────────────────
 # Page config
 # ──────────────────────────────────────────────
 st.set_page_config(
-    # page_title="AI Vision Roast System",
-    page_title="RoastMyDesign",
+    page_title="AI Vision Roast System",
     page_icon="🔥",
     layout="centered",
     initial_sidebar_state="collapsed",
@@ -189,23 +196,39 @@ input[type="text"]:focus, textarea:focus {
 
 
 # ──────────────────────────────────────────────
-# Gemini setup (Streamlit Secrets)
+# Gemini setup (Works with both Secrets and .env)
 # ──────────────────────────────────────────────
-# def configure_gemini():
-#     try:
-#         api_key = st.secrets["GEMINI_API_KEY"]
-#         # genai.configure(api_key=api_key)
-#         client = genai.Client(api_key=api_key)
-#         return True
-#     except Exception:
-#         st.error(
-#             "⚠️ **Gemini API key not found.** "
-#             "Add `GEMINI_API_KEY` to your Streamlit Secrets "
-#             "(*Settings → Secrets* in Streamlit Community Cloud)."
-#         )
-#         return False
-def get_client():
-    return genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+def get_api_key():
+    """Get API key from multiple sources"""
+    # Try Streamlit secrets first (for cloud deployment)
+    try:
+        if "GEMINI_API_KEY" in st.secrets:
+            return st.secrets["GEMINI_API_KEY"]
+    except:
+        pass
+    
+    # Try environment variable (for local development)
+    api_key = os.getenv("GEMINI_API_KEY")
+    if api_key:
+        return api_key
+    
+    return None
+
+def configure_gemini():
+    try:
+        api_key = get_api_key()
+        if not api_key:
+            st.error(
+                "⚠️ **Gemini API key not found.**\n\n"
+                "For local development: Create a `.env` file with `GEMINI_API_KEY=your_key_here`\n\n"
+                "For Streamlit Cloud: Add `GEMINI_API_KEY` to your Secrets (Settings → Secrets)"
+            )
+            return False
+        genai.configure(api_key=api_key)
+        return True
+    except Exception as e:
+        st.error(f"⚠️ Error configuring Gemini: {e}")
+        return False
 
 
 # ──────────────────────────────────────────────
@@ -302,53 +325,14 @@ def parse_response(text: str) -> dict:
     return sections
 
 
-# def call_gemini(image: Image.Image, prompt: str) -> str:
-#     # ── MODEL PLACEHOLDER ──────────────────────────
-#     # Change model name here when Gemini 2.5 Flash
-#     # becomes available on your API tier, e.g.:
-#     #   model_name = "gemini-2.5-flash"
-#     MODEL_NAME = "gemini-2.5-flash"   # ← swap model here
-#     # ───────────────────────────────────────────────
-
-#     # model = genai.GenerativeModel(MODEL_NAME)
-#     model = client.models.generate_content(MODEL_NAME)
-#     response = model.generate_content([prompt, image])
-#     return response.text
-
 def call_gemini(image: Image.Image, prompt: str) -> str:
-    client = get_client()
-
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=[prompt, image]
-    )
-
+    # Use a stable, widely available model
+    # Options: "gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro-vision"
+    MODEL_NAME = "gemini-1.5-flash"  # Changed from gemini-2.5-flash
+    
+    model = genai.GenerativeModel(MODEL_NAME)
+    response = model.generate_content([prompt, image])
     return response.text
-
-# def call_gemini(image: Image.Image, prompt: str) -> str:
-#     client = get_client()
-
-#     models = [
-#         "gemini-2.5-flash",   # Primary (fast & good)
-#         "gemini-1.5-flash"    # Backup (more stable)
-#     ]
-
-#     last_error = None
-
-#     for model_name in models:
-#         try:
-#             response = client.models.generate_content(
-#                 model=model_name,
-#                 contents=[prompt, image]
-#             )
-#             return response.text
-
-#         except Exception as e:
-#             last_error = e
-#             continue  # Try next model
-
-#     # If all models fail
-#     raise Exception(f"All models failed. Last error: {last_error}")
 
 
 # ──────────────────────────────────────────────
@@ -356,8 +340,7 @@ def call_gemini(image: Image.Image, prompt: str) -> str:
 # ──────────────────────────────────────────────
 st.markdown("""
 <div class="hero-header">
-  <!-- <h1>🔥 AI Vision Roast System</h1> -->
-  <h1>🔥 RoastMyDesign</h1>
+  <h1>🔥 AI Vision Roast System</h1>
   <p>Upload your logo or banner — we'll roast it, then actually help you fix it.</p>
 </div>
 """, unsafe_allow_html=True)
@@ -409,10 +392,8 @@ analyze_clicked = st.button("🔥 Analyze Design", use_container_width=True)
 if analyze_clicked:
     if not uploaded_file:
         st.warning("⚠️ Please upload an image or PDF first.")
-    # elif not configure_gemini():
-    #     pass  # error already shown
-    elif not uploaded_file:
-        st.warning("⚠️ Please upload an image or PDF first.")
+    elif not configure_gemini():
+        pass  # error already shown
     else:
         # Load image
         with st.spinner("Processing your design..."):
@@ -478,4 +459,3 @@ if analyze_clicked:
 
         st.markdown('<hr class="styled-divider">', unsafe_allow_html=True)
         st.success("✅ Analysis complete! Use the feedback above to level up your design.")
-        
