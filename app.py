@@ -17,7 +17,8 @@ except ImportError:
 # Page config
 # ──────────────────────────────────────────────
 st.set_page_config(
-    page_title="AI Vision Roast System",
+    # page_title="AI Vision Roast Syste",
+    page_title="RoastMyDesign"
     page_icon="🔥",
     layout="centered",
     initial_sidebar_state="collapsed",
@@ -347,7 +348,8 @@ def call_gemini(image: Image.Image, prompt: str) -> str:
 # ──────────────────────────────────────────────
 st.markdown("""
 <div class="hero-header">
-  <h1>🔥 AI Vision Roast System</h1>
+  <!-- <h1>🔥 AI Vision Roast System</h1> -->
+  <h1>🔥 RoastMyDesign</h1>
   <p>Upload your logo or banner — we'll roast it, then actually help you fix it.</p>
 </div>
 """, unsafe_allow_html=True)
