@@ -193,7 +193,8 @@ input[type="text"]:focus, textarea:focus {
 def configure_gemini():
     try:
         api_key = st.secrets["GEMINI_API_KEY"]
-        genai.configure(api_key=api_key)
+        # genai.configure(api_key=api_key)
+        client = genai.Client(api_key=api_key)
         return True
     except Exception:
         st.error(
@@ -306,7 +307,8 @@ def call_gemini(image: Image.Image, prompt: str) -> str:
     MODEL_NAME = "gemini-2.5-flash"   # ← swap model here
     # ───────────────────────────────────────────────
 
-    model = genai.GenerativeModel(MODEL_NAME)
+    # model = genai.GenerativeModel(MODEL_NAME)
+    client.models.generate_content(MODEL_NAME)
     response = model.generate_content([prompt, image])
     return response.text
 
