@@ -18,7 +18,7 @@ except ImportError:
 # ──────────────────────────────────────────────
 st.set_page_config(
     # page_title="AI Vision Roast Syste",
-    page_title="RoastMyDesign"
+    page_title="RoastMyDesign",
     page_icon="🔥",
     layout="centered",
     initial_sidebar_state="collapsed",
