@@ -308,7 +308,7 @@ def call_gemini(image: Image.Image, prompt: str) -> str:
     # ───────────────────────────────────────────────
 
     # model = genai.GenerativeModel(MODEL_NAME)
-    client.models.generate_content(MODEL_NAME)
+    model = client.models.generate_content(MODEL_NAME)
     response = model.generate_content([prompt, image])
     return response.text
 
