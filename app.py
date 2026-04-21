@@ -303,7 +303,7 @@ def call_gemini(image: Image.Image, prompt: str) -> str:
     # Change model name here when Gemini 2.5 Flash
     # becomes available on your API tier, e.g.:
     #   model_name = "gemini-2.5-flash"
-    MODEL_NAME = "gemini-1.5-flash"   # ← swap model here
+    MODEL_NAME = "gemini-2.5-flash"   # ← swap model here
     # ───────────────────────────────────────────────
 
     model = genai.GenerativeModel(MODEL_NAME)
