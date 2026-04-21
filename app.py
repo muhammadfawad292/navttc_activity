@@ -9,7 +9,8 @@ import base64
 # Page config
 # ──────────────────────────────────────────────
 st.set_page_config(
-    page_title="AI Vision Roast System",
+    # page_title="AI Vision Roast System",
+    page_title="RoastMyDesign",
     page_icon="🔥",
     layout="centered",
     initial_sidebar_state="collapsed",
