@@ -192,7 +192,7 @@ input[type="text"]:focus, textarea:focus {
 # ──────────────────────────────────────────────
 def configure_gemini():
     try:
-        api_key = st.secrets["AIzaSyAQZGdFlr_C687mxR4_e8RZgHzqxbF3-Fg"]
+        api_key = st.secrets["GEMINI_API_KEY"]
         genai.configure(api_key=api_key)
         return True
     except Exception:
